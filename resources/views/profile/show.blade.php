@@ -50,6 +50,10 @@
                 </div>
                 <div class="card-footer">
                     <a href="{{ route('profile.change-password') }}" class="btn btn-warning">Cambiar Contraseña</a>
+                    <form action="{{ route('logout') }}" method="POST" style="display:inline-block;">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+                    </form>
                 </div>
             </div>
         </div>

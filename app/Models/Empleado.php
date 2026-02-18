@@ -21,6 +21,7 @@ class Empleado extends Model
         'puesto',
         'salario',
         'fecha_contratacion',
+        'foto',
     ];
 
     protected $casts = [

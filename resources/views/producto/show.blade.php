@@ -12,7 +12,14 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4 text-center">
+                    @if($producto->foto)
+                        <img src="{{ asset('storage/' . $producto->foto) }}" alt="Foto de {{ $producto->nombre }}" class="img-thumbnail" style="max-width: 300px;">
+                    @else
+                        <img src="{{ asset('img/product-default.png') }}" alt="Sin foto" class="img-thumbnail" style="max-width: 300px;">
+                    @endif
+                </div>
+                <div class="col-md-8">
                     <p>
                         <strong>ID:</strong> {{ $producto->id }}
                     </p>
@@ -25,8 +32,6 @@
                     <p>
                         <strong>Categoría:</strong> {{ $producto->categoria ?? 'N/A' }}
                     </p>
-                </div>
-                <div class="col-md-6">
                     <p>
                         <strong>Precio:</strong> ${{ number_format($producto->precio, 2) }}
                     </p>
@@ -48,6 +53,17 @@
                     <strong>Descripción:</strong>
                 </p>
                 <p>{{ $producto->descripcion }}</p>
+            @endif
+
+            @if($producto->adjunto)
+                <hr>
+                <div class="alert alert-info">
+                    <i class="fas fa-file mr-2"></i>
+                    <strong>Archivo Adjunto:</strong>
+                    <a href="{{ asset('storage/' . $producto->adjunto) }}" class="btn btn-sm btn-primary ml-2" target="_blank">
+                        <i class="fas fa-download mr-1"></i>Descargar
+                    </a>
+                </div>
             @endif
         </div>
         <div class="card-footer">

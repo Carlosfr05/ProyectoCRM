@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clientes;
+use App\Models\Producto;
+use App\Models\Proveedor;
+use App\Models\Empleado;
+use App\Models\Sucursal;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +28,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $stats = [
+            'clientes' => Clientes::count(),
+            'productos' => Producto::count(),
+            'proveedores' => Proveedor::count(),
+            'empleados' => Empleado::count(),
+            'sucursales' => Sucursal::count(),
+        ];
+
+        return view('home', compact('stats'));
     }
 }

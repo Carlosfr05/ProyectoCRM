@@ -16,6 +16,10 @@
     margin: 0;
 }
 
+.bienvenida_dashboard {
+    margin-top: 2rem !important;
+}
+
 .pagination .page-link {
     padding: 0.35rem 0.6rem !important;
     font-size: 0.875rem !important;

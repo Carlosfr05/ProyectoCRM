@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => 'eGesty',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
+    'logo' => '<b>e</b>Gesty',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -316,6 +316,13 @@ return [
             'text' => 'search',
         ],
 
+        // Dashboard
+        [
+            'text' => 'Dashboard',
+            'url' => 'home',
+            'icon' => 'fas fa-fw fa-tachometer-alt',
+        ],
+
         // Gestión de Negocio
         ['header' => 'Gestión de Negocio'],
         [
@@ -371,6 +378,12 @@ return [
                     'icon' => 'fas fa-fw fa-user',
                 ],
             ],
+        ],
+        [
+            'text' => 'Gestión de Usuarios',
+            'url' => 'users',
+            'icon' => 'fas fa-fw fa-users-cog',
+            'can' => 'manage-users',
         ],
     ],
 

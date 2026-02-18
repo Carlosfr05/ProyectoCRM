@@ -6,7 +6,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('cliente.update', $cliente->id) }}" method="POST">
+            <form action="{{ route('cliente.update', $cliente->id) }}" method="POST" enctype="multipart/form-data">
                 @method('PUT')
                 @include('cliente._form')
             </form>

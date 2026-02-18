@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Empleado;
+use Illuminate\Support\Facades\Storage;
 
 class EmpleadoController extends Controller
 {
@@ -28,7 +29,13 @@ class EmpleadoController extends Controller
             'puesto' => 'nullable|string|max:100',
             'salario' => 'nullable|numeric|min:0',
             'fecha_contratacion' => 'nullable|date',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Procesar la foto si se envió
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('empleados', 'public');
+        }
 
         Empleado::create($data);
 
@@ -59,7 +66,18 @@ class EmpleadoController extends Controller
             'puesto' => 'nullable|string|max:100',
             'salario' => 'nullable|numeric|min:0',
             'fecha_contratacion' => 'nullable|date',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Procesar la foto si se envió
+        if ($request->hasFile('foto')) {
+            // Eliminar foto anterior si existe
+            if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+                Storage::disk('public')->delete($empleado->foto);
+            }
+            // Guardar nueva foto
+            $data['foto'] = $request->file('foto')->store('empleados', 'public');
+        }
 
         $empleado->update($data);
 
@@ -69,6 +87,12 @@ class EmpleadoController extends Controller
     public function destroy($id)
     {
         $empleado = Empleado::findOrFail($id);
+        
+        // Eliminar foto si existe
+        if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+            Storage::disk('public')->delete($empleado->foto);
+        }
+        
         $empleado->delete();
 
         return redirect()->route('empleado.index')->with('success', 'Empleado eliminado correctamente.');

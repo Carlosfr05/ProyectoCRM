@@ -8,7 +8,7 @@
         <div class="card-header">
             <h3 class="card-title">Editar Producto</h3>
         </div>
-        <form action="{{ route('producto.update', $producto->id) }}" method="POST">
+        <form action="{{ route('producto.update', $producto->id) }}" method="POST" enctype="multipart/form-data">
             @method('PUT')
             @include('producto._form')
         </form>

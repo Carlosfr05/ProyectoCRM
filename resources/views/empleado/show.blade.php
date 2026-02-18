@@ -11,6 +11,14 @@
             <h3 class="card-title">{{ $empleado->nombre }}</h3>
         </div>
         <div class="card-body">
+            <div class="text-center mb-4">
+                @if($empleado->foto)
+                    <img src="{{ asset('storage/' . $empleado->foto) }}" alt="Foto de {{ $empleado->nombre }}" class="img-thumbnail" style="max-width: 300px;">
+                @else
+                    <img src="{{ asset('img/default-profile.png') }}" alt="Sin foto" class="img-thumbnail" style="max-width: 300px;">
+                @endif
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>ID:</strong> {{ $empleado->id }}</p>

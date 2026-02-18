@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Producto;
+use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
@@ -36,7 +37,19 @@ class ProductoController extends Controller
             'cantidad' => 'required|integer|min:0',
             'sku' => 'required|string|unique:productos,sku',
             'categoria' => 'nullable|string|max:100',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'adjunto' => 'nullable|mimes:pdf,doc,docx,xlsx,xls,txt|max:5120',
         ]);
+
+        // Procesar la foto si se envió
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('productos', 'public');
+        }
+
+        // Procesar el adjunto si se envió
+        if ($request->hasFile('adjunto')) {
+            $data['adjunto'] = $request->file('adjunto')->store('productos/adjuntos', 'public');
+        }
 
         Producto::create($data);
 
@@ -75,7 +88,29 @@ class ProductoController extends Controller
             'cantidad' => 'required|integer|min:0',
             'sku' => 'required|string|unique:productos,sku,' . $producto->id,
             'categoria' => 'nullable|string|max:100',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'adjunto' => 'nullable|mimes:pdf,doc,docx,xlsx,xls,txt|max:5120',
         ]);
+
+        // Procesar la foto si se envió
+        if ($request->hasFile('foto')) {
+            // Eliminar foto anterior si existe
+            if ($producto->foto && Storage::disk('public')->exists($producto->foto)) {
+                Storage::disk('public')->delete($producto->foto);
+            }
+            // Guardar nueva foto
+            $data['foto'] = $request->file('foto')->store('productos', 'public');
+        }
+
+        // Procesar el adjunto si se envió
+        if ($request->hasFile('adjunto')) {
+            // Eliminar adjunto anterior si existe
+            if ($producto->adjunto && Storage::disk('public')->exists($producto->adjunto)) {
+                Storage::disk('public')->delete($producto->adjunto);
+            }
+            // Guardar nuevo adjunto
+            $data['adjunto'] = $request->file('adjunto')->store('productos/adjuntos', 'public');
+        }
 
         $producto->update($data);
 
@@ -88,6 +123,17 @@ class ProductoController extends Controller
     public function destroy($id)
     {
         $producto = Producto::findOrFail($id);
+        
+        // Eliminar foto si existe
+        if ($producto->foto && Storage::disk('public')->exists($producto->foto)) {
+            Storage::disk('public')->delete($producto->foto);
+        }
+
+        // Eliminar adjunto si existe
+        if ($producto->adjunto && Storage::disk('public')->exists($producto->adjunto)) {
+            Storage::disk('public')->delete($producto->adjunto);
+        }
+        
         $producto->delete();
 
         return redirect()->route('producto.index')->with('success', 'Producto eliminado correctamente.');

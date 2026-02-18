@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content_header_title', 'Sucursales')
+@section('content_header_title', 'Gestión de Usuarios')
 
 @push('css')
     <link rel="stylesheet" href="{{ asset('vendor/datatables/css/dataTables.bootstrap4.min.css') }}">
@@ -12,55 +12,71 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <div class="mb-3">
-        <a href="{{ route('sucursal.create') }}" class="btn btn-primary">Nueva Sucursal</a>
+        <a href="{{ route('users.create') }}" class="btn btn-primary">Nuevo Usuario</a>
     </div>
 
     <div class="card">
         <div class="card-body table-responsive">
-            <table class="table table-striped" id="sucursalesTable">
+            <table class="table table-striped" id="usersTable">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Ciudad</th>
-                        <th>Gerente</th>
-                        <th>Teléfono</th>
                         <th>Email</th>
+                        <th>Rol</th>
+                        <th>Creado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($sucursales as $s)
+                    @forelse($users as $u)
                         <tr>
-                            <td>{{ $s->id }}</td>
-                            <td>{{ $s->nombre }}</td>
-                            <td>{{ $s->ciudad ?? 'N/A' }}</td>
-                            <td>{{ $s->gerente ?? 'N/A' }}</td>
-                            <td>{{ $s->telefono }}</td>
-                            <td>{{ $s->email ?? 'N/A' }}</td>
+                            <td>{{ $u->id }}</td>
+                            <td>{{ $u->name }}</td>
+                            <td>{{ $u->email }}</td>
                             <td>
-                                <a href="{{ route('sucursal.show', $s->id) }}" class="btn btn-sm btn-info">Ver</a>
-                                <a href="{{ route('sucursal.edit', $s->id) }}" class="btn btn-sm btn-warning">Editar</a>
-                                @if(auth()->user()->isAdmin())
-                                    <form action="{{ route('sucursal.destroy', $s->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar sucursal?');">
+                                <span class="badge badge-{{ $u->isAdmin() ? 'danger' : 'info' }}">
+                                    {{ $u->isAdmin() ? 'Administrador' : 'Usuario' }}
+                                </span>
+                            </td>
+                            <td>{{ $u->created_at->format('d/m/Y H:i') }}</td>
+                            <td>
+                                <a href="{{ route('users.show', $u->id) }}" class="btn btn-sm btn-info" title="Ver">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('users.edit', $u->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                @if($u->id !== auth()->id())
+                                    <form action="{{ route('users.destroy', $u->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar usuario? Esta acción no se puede deshacer.');">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger">Eliminar</button>
+                                        <button class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </form>
+                                @else
+                                    <button class="btn btn-sm btn-danger" disabled title="No puedes eliminar tu propia cuenta">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7">No hay sucursales registradas.</td>
+                            <td colspan="6">No hay usuarios registrados.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
 
             <div class="d-flex justify-content-center">
-                {{ $sucursales->links() }}
+                {{ $users->links() }}
             </div>
         </div>
     </div>
@@ -70,7 +86,7 @@
 <script src="{{ asset('vendor/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
 <script>
     $(document).ready(function() {
-        $('#sucursalesTable').DataTable({
+        $('#usersTable').DataTable({
             "paging": true,
             "lengthChange": false,
             "searching": true,

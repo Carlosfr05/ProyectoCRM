@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Clientes;
+use Illuminate\Support\Facades\Storage;
 
 class ClientesController extends Controller
 {
@@ -30,7 +31,13 @@ class ClientesController extends Controller
             'email' => 'required|email|unique:clientes,email',
             'telefono' => 'nullable|string|max:50',
             'direccion' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Procesar la foto si se envió
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('clientes', 'public');
+        }
 
         Clientes::create($data);
 
@@ -61,7 +68,18 @@ class ClientesController extends Controller
             'email' => 'required|email|unique:clientes,email,' . $cliente->id,
             'telefono' => 'nullable|string|max:50',
             'direccion' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Procesar la foto si se envió
+        if ($request->hasFile('foto')) {
+            // Eliminar foto anterior si existe
+            if ($cliente->foto && Storage::disk('public')->exists($cliente->foto)) {
+                Storage::disk('public')->delete($cliente->foto);
+            }
+            // Guardar nueva foto
+            $data['foto'] = $request->file('foto')->store('clientes', 'public');
+        }
 
         $cliente->update($data);
 
@@ -72,6 +90,12 @@ class ClientesController extends Controller
     public function destroy($id)
     {
         $cliente = Clientes::findOrFail($id);
+        
+        // Eliminar foto si existe
+        if ($cliente->foto && Storage::disk('public')->exists($cliente->foto)) {
+            Storage::disk('public')->delete($cliente->foto);
+        }
+        
         $cliente->delete();
 
         return redirect()->route('cliente.index')->with('success', 'Cliente eliminado correctamente.');
