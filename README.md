@@ -5,15 +5,18 @@
 ProyectoSGE es un **Sistema de Gestión Empresarial (ERP)** construido con **Laravel 12** y **AdminLTE 3**. 
 
 El sistema proporciona herramientas completas para gestionar:
-- **Productos**: Inventario, precios, categorías y stock
+- **Productos**: Inventario, precios, categorías y stock, con soporte para imágenes y archivos adjuntos
 - **Proveedores**: Información de contacto, empresas y direcciones
 - **Empleados**: Base de datos de recursos humanos con datos de contratación y salarios
 - **Sucursales**: Gestión de ubicaciones, horarios y gerentes
+- **Usuarios**: Gestión de usuarios con sistema de roles (Admin/User)
 
 Características principales:
 - 🎨 Interfaz moderna con tema oscuro y accentes en morado
-- 📊 Dashboard intuitivo con AdminLTE 3
-- 🔐 Sistema de autenticación y gestión de usuarios
+- 📊 Dashboard intuitivo con análisis y estadísticas empresariales
+- 🔐 Sistema de autenticación con roles de usuario (Admin/User)
+- 👥 Gestión avanzada de usuarios con permisos basados en roles
+- 📁 Soporte para carga de imágenes y archivos adjuntos
 - 📱 Diseño responsivo compatible con dispositivos móviles
 
 ---
@@ -26,12 +29,14 @@ Características principales:
 - **Node.js 18+** y **npm** (para compilar assets)
 - **MySQL 5.7+** (base de datos)
 - **XAMPP** (incluye Apache, PHP y MySQL) - recomendado para desarrollo local
+- **GD Library** (para manejo de imágenes)
 
 ### Dependencias PHP
 Las dependencias principales incluyen:
 - Laravel Framework 12.x
 - AdminLTE 3
 - Laravel Breeze (autenticación)
+- League\Flysystem (para gestión de archivos)
 
 ### Dependencias Node.js
 - Vite
@@ -91,7 +96,7 @@ npm install
 php artisan migrate --seed
 ```
 
-Este comando creará todas las tablas y poblará la base de datos con datos de ejemplo, incluyendo el usuario administrador.
+Este comando creará todas las tablas y poblará la base de datos con datos de ejemplo, incluyendo el usuario administrador con rol "admin".
 
 ### 7. Compilar assets (para desarrollo)
 
@@ -121,6 +126,17 @@ La aplicación estará disponible en: `http://localhost:8000`
 
 ---
 
+## Sistema de Roles y Autenticación
+
+El proyecto implementa un sistema de roles basado en dos niveles:
+
+| Rol | Descripción | Permisos |
+|-----|-------------|----------|
+| **Admin** | Administrador del sistema | Acceso completo a todas las funcionalidades, gestión de usuarios |
+| **User** | Usuario estándar | Acceso limitado a reportes y visualización de datos |
+
+---
+
 ## Usuario y Contraseña de Prueba
 
 ### Credenciales Admin
@@ -129,7 +145,7 @@ La aplicación estará disponible en: `http://localhost:8000`
 |-------|-------|
 | **Email** | `admin@admin.com` |
 | **Contraseña** | `adminadmin` |
-| **Nombre** | admin |
+| **Rol** | admin |
 
 Estas credenciales se crean automáticamente al ejecutar el seeder (`php artisan migrate --seed`).
 
@@ -139,7 +155,7 @@ Estas credenciales se crean automáticamente al ejecutar el seeder (`php artisan
 |-------|-------|
 | **Email** | `test@example.com` |
 | **Contraseña** | `password` (generada por factory) |
-| **Nombre** | Test User |
+| **Rol** | user |
 
 ---
 
@@ -148,22 +164,50 @@ Estas credenciales se crean automáticamente al ejecutar el seeder (`php artisan
 ```
 ProyectoSGE/
 ├── app/
-│   ├── Http/Controllers/       # Controladores (Producto, Proveedor, Empleado, Sucursal)
-│   ├── Models/                 # Modelos (User, Clientes, Producto, etc.)
+│   ├── Http/
+│   │   ├── Controllers/        # Controladores (Dashboard, Usuarios, Producto, Proveedor, etc.)
+│   │   └── Middleware/         # Middlewares de autenticación y roles
+│   ├── Models/                 # Modelos (User, Clientes, Producto, Empleado, etc.)
 │   └── Providers/              # Proveedores de servicio
 ├── database/
-│   ├── migrations/             # Migraciones de base de datos
+│   ├── migrations/             # Migraciones de base de datos (incluyendo roles)
 │   ├── factories/              # Factories para seeding
 │   └── seeders/                # Seeders de datos
 ├── resources/
 │   ├── css/                    # Estilos personalizados
 │   ├── js/                     # Scripts JavaScript
-│   └── views/                  # Vistas Blade
+│   └── views/
+│       ├── dashboard/          # Vistas del dashboard
+│       ├── users/              # Vistas de gestión de usuarios
+│       └── ...                 # Otras vistas (Blade templates)
+├── storage/
+│   └── app/                    # Almacenamiento de imágenes y archivos subidos
 ├── routes/                     # Definición de rutas
 ├── public/                     # Assets públicos compilados
 ├── config/                     # Archivos de configuración
 └── vendor/                     # Dependencias Composer
 ```
+
+---
+
+## Nuevas Páginas y Funcionalidades
+
+### Dashboard
+- Página principal con resumen de estadísticas
+- Gráficos y análisis de datos empresariales
+- Acceso rápido a funcionalidades principales
+
+### Gestión de Usuarios
+- Crear, editar, eliminar y listar usuarios
+- Asignación de roles (Admin/User)
+- Vista de permisos según el rol
+- Control de acceso basado en roles (RBAC)
+
+### Gestión de Archivos e Imágenes
+- Carga de imágenes de productos
+- Almacenamiento de archivos adjuntos
+- Validación de tipos y tamaños de archivo
+- Gestión de almacenamiento en carpeta `storage/app`
 
 ---
 
